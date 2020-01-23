@@ -23,11 +23,12 @@ import de.fhg.aisec.ids.api.conm.IDSCPIncomingConnection;
 import de.fhg.aisec.ids.api.conm.IDSCPOutgoingConnection;
 import de.fhg.aisec.ids.api.conm.RatResult;
 import de.fhg.aisec.ids.camel.ids.connectionmanagement.ConnectionManagerService;
-import java.util.List;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
+
+import java.util.List;
 
 public class IdsClientServerPlaintextWithAttestationTest extends CamelTestSupport {
   private static final String TEST_MESSAGE = "Hello World!";
@@ -39,13 +40,13 @@ public class IdsClientServerPlaintextWithAttestationTest extends CamelTestSuppor
     assertTrue(conm.listIncomingConnections().isEmpty());
 
     MockEndpoint mock = getMockEndpoint("mock:result");
+    mock.expectedBodiesReceived(TEST_MESSAGE);
 
     // Send a test message into begin of client route
     template.sendBody("direct:input", TEST_MESSAGE);
 
     // We expect that mock endpoint is happy and has received a message
     mock.assertIsSatisfied();
-    mock.expectedBodiesReceived(TEST_MESSAGE);
 
     // We expect one incoming connection to be listed by ConnectionManager
     List<IDSCPIncomingConnection> incomings = conm.listIncomingConnections();
@@ -75,32 +76,24 @@ public class IdsClientServerPlaintextWithAttestationTest extends CamelTestSuppor
     assertEquals("{\"message\":\"Infomodel is not available\"}", meta);
   }
 
-  /**
-   * Make sure that a route can handle being restarted.
-   *
-   * @throws Exception
-   */
   @Test
   public void testTwoRoutesRestartConsumer() throws Exception {
     MockEndpoint mock = getMockEndpoint("mock:result");
+
     resetMocks();
-
-    // Send a message
-    template.sendBody("direct:input", TEST_MESSAGE);
-
     mock.expectedBodiesReceived(TEST_MESSAGE);
+    template.sendBody("direct:input", TEST_MESSAGE);
     mock.assertIsSatisfied();
-
-    // Clean the mocks
-    resetMocks();
 
     // Now stop and start the client route
     log.info("Restarting client route");
-    context.stopRoute("client");
-    context.startRoute("client");
+    var routeController = context.getRouteController();
+    routeController.stopRoute("client");
+    routeController.startRoute("client");
 
-    template.sendBody("direct:input", TEST_MESSAGE_2);
+    resetMocks();
     mock.expectedBodiesReceived(TEST_MESSAGE_2);
+    template.sendBody("direct:input", TEST_MESSAGE_2);
     mock.assertIsSatisfied();
   }
 

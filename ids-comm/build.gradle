@@ -3,7 +3,10 @@ version = libraryVersions.idscp
 dependencies {
     providedByBundle(project(':ids-api')) { transitive = false }
 
-    providedByBundle group: 'com.github.microsoft', name: 'TSS.Java', version: '0.3.0'
+    providedByBundle(group: 'com.github.microsoft', name: 'TSS.Java', version: '0.3.0') {
+        // JNA not needed, because we do not directly communicate with the TPM via this library
+        exclude group: 'net.java.dev.jna', module: 'jna'
+    }
 
     providedByBundle group: 'org.apache.logging.log4j', name: 'log4j-core', version: libraryVersions.log4j
     providedByBundle group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: libraryVersions.log4j
@@ -16,10 +19,6 @@ dependencies {
 
     providedByFeature group: 'org.eclipse.jetty.websocket', name: 'websocket-server', version: libraryVersions.jetty
     providedByFeature group: 'org.eclipse.jetty.websocket', name: 'websocket-client', version: libraryVersions.jetty
-
-    testImplementation group: "javax.xml.bind", name: "jaxb-api", version: libraryVersions.jaxb
-    testImplementation group: "com.sun.xml.bind", name: "jaxb-core", version: libraryVersions.jaxb
-    testImplementation group: "com.sun.xml.bind", name: "jaxb-impl", version: libraryVersions.jaxb
 
     testImplementation group: 'junit', name: 'junit', version: libraryVersions.junit4
     testImplementation group: 'org.mockito', name: 'mockito-core', version: libraryVersions.mockito

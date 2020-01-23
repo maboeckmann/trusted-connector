@@ -1,5 +1,5 @@
 buildscript {
-    repositories {   // config some remote repo, then ok
+    repositories {
         mavenCentral()
     }
 }
@@ -13,7 +13,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.21'
     id 'com.github.jlouns.cpe' version '0.5.0'
     id 'com.benjaminsproule.swagger' version '1.0.6'
-    id 'com.bmuschko.docker-remote-api' version '3.4.3'
+    id 'com.bmuschko.docker-remote-api' version '6.1.1'
     id 'com.diffplug.gradle.spotless' version '3.13.0'
     id 'com.github.jk1.dependency-license-report' version '1.2'
 }
@@ -53,7 +53,7 @@ def getDockerTag() {
 
 allprojects {
     group = 'de.fhg.aisec.ids'
-    version = '2.1.0-SNAPSHOT'
+    version = '3.0.0-SNAPSHOT'
 
     ext.libraryVersions = [
             // Versions for modules that will be released as libraries
@@ -61,18 +61,19 @@ allprojects {
             idscp              : '1.0.2',
 
             // basically, the first requirement, all other libraries depend on this version
-            karaf              : '4.2.6',
+            karaf              : '4.2.7',
 
             // The used version of the infomodel from IESE
-            infomodel          : '2.0.0+',
-            infomodelSerializer: '2.0.0+',
+            infomodel          : '2.1.0+',
+            infomodelSerializer: '2.0.1+',
 
             // For javax.xml.bind support in newer java versions
             jaxb               : "2.2.11",
+            jaxActivation      : "1.2.0",
 
             pax                : '7.2.10',
 
-            camel              : '2.24.1',
+            camel              : '3.0.0',
 
             // Camel ships with cxf, however it is slightly older so we want a newer version
             cxf                : '3.2.7',
@@ -98,7 +99,7 @@ allprojects {
             httpclient         : '4.5.7',
 
             // it seems not all jetty components are in our BOM so we need to specify it here as well
-            jetty              : '9.4.18.v20190429',
+            jetty              : '9.4.20.v20190813',
 
             // we will pull in a newer version of jackson because of security fixes
             jackson            : '2.9.8',
@@ -144,6 +145,15 @@ allprojects {
         // Some compileOnly dependencies are also needed for unit tests
         testImplementation.extendsFrom compileOnly
     }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        // References IAIS repository that contains the infomodel artifacts
+        maven {
+            url 'https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/'
+        }
+    }
 }
 
 subprojects {
@@ -176,7 +186,9 @@ subprojects {
         // Required for successful build with JDK 11
         compileOnly group: "javax.xml.bind", name: "jaxb-api", version: libraryVersions.jaxb
         testImplementation group: "javax.xml.bind", name: "jaxb-api", version: libraryVersions.jaxb
-        testImplementation group: 'com.sun.activation', name: 'javax.activation', version: '1.2.0'
+        testImplementation group: "com.sun.xml.bind", name: "jaxb-core", version: libraryVersions.jaxb
+        testImplementation group: "com.sun.xml.bind", name: "jaxb-impl", version: libraryVersions.jaxb
+        testImplementation group: 'com.sun.activation', name: 'javax.activation', version: libraryVersions.jaxActivation
 
         testImplementation "org.ops4j.pax.exam:pax-exam-container-karaf:${libraryVersions.paxExam}"
         testImplementation "org.ops4j.pax.exam:pax-exam-junit4:${libraryVersions.paxExam}"
@@ -186,8 +198,16 @@ subprojects {
         testImplementation "org.slf4j:slf4j-simple:1.7.12"
     }
 
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
+//        options.compilerArgs << '-Xlint:unchecked'
+//        options.deprecation = true
     }
 
     tasks.withType(Jar) {
@@ -199,15 +219,6 @@ subprojects {
                 // TODO: this was set in most of the bnd files. do we really need this?
                 attributes '-noee': true
             }
-        }
-    }
-
-    repositories {
-        mavenCentral()
-        jcenter()
-        // References IAIS repository that contains the infomodel artifacts
-        maven {
-            url 'https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/'
         }
     }
 }
