@@ -104,8 +104,8 @@ public class IdspClientSocket implements WebSocketListener {
 
   @Override
   public void onTextFrame(String message, boolean finalFragment, int rsv) {
-    Log.debug("Client websocket received text message {}", message);
-    onBinaryFrame(message.getBytes(), finalFragment, rsv);
+    System.out.println("Client websocket received text message: " + message);
+    //onBinaryFrame(message.getBytes(), finalFragment, rsv);
   }
 
   @NonNull
