@@ -1,10 +1,19 @@
 package de.fhg.aisec.ids.comm.server;
 
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.rdf4j.query.QueryResults;
+import org.eclipse.rdf4j.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class MySocketListener implements SocketListener {
+    private static TestServer server;
+    public MySocketListener(TestServer server)
+    {
+        MySocketListener.server = server;
+    }
     @Override
     public void onMessage(Session session, byte[] message) {
         try {
@@ -23,7 +32,12 @@ public class MySocketListener implements SocketListener {
 
             String query = msg.substring(msg.indexOf("%$%") + 4);
             System.out.println("Received query: " + query);
-            session.getRemote().sendString("Query executed");
+            String result = server.getRepositoryFacade().query(query, tupleQueryResult -> {
+                OutputStream resultOut = new ByteArrayOutputStream();
+                QueryResults.report(tupleQueryResult, new SPARQLResultsXMLWriter(resultOut));
+                return resultOut.toString();
+            });
+            session.getRemote().sendString("Query executed. Result: " + result);
         }
         catch (IOException e)
         {
