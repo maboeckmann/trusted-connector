@@ -8,20 +8,22 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TestClient {
 
-    private char identifier;
+    private String identifier;
     private String host;
     private int port;
     WebSocket wsClient;
     IdscpClient idscpClient;
     //MyClientWebSocketListener listener;
 
-    private void init(char identifier)
+    private void init(String identifier)
     {
         try {
             //listener = new MyClientWebSocketListener();
@@ -71,14 +73,15 @@ public class TestClient {
 
     public static void main(String[] args) {
         try {
+            String path = Path.of("/home/" + System.getProperty("user.name") + "/Desktop/").toString();
             TestClient testClient = new TestClient();
-            String host = args[1];
-            int port = Integer.parseInt(args[2]);
+            String host = args[0];
+            int port = Integer.parseInt(args[1]);
             testClient.setTarget(host, port);
-            testClient.init(args[0].charAt(0));
+            testClient.init(Files.lines(Path.of(path + "/identity.txt"), StandardCharsets.UTF_8).findFirst().get());
+            //testClient.init(args[0].charAt(0));
             StringBuilder contentBuilder = new StringBuilder();
-            //String path = "/home/" + System.getProperty("user.name") + "/Desktop/trusted-connector-query.sparql";
-            try (Stream<String> stream = Files.lines( Paths.get("/home/" + System.getProperty("user.name") + "/Desktop/trusted-connector-query.sparql"), StandardCharsets.UTF_8))
+            try (Stream<String> stream = Files.lines( Path.of(path + "/trusted-connector-query.sparql"), StandardCharsets.UTF_8))
             {
                 stream.forEach(s -> contentBuilder.append(s).append("\n"));
             }

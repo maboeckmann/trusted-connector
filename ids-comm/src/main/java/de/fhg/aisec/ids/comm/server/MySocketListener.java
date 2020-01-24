@@ -17,10 +17,14 @@ public class MySocketListener implements SocketListener {
         try {
             String msg = new String(message);
             if(msg.length() < 10) { return; }
-            String identity = msg.substring(9, 10);
-            if (identity.toLowerCase().equals("a")) {
+            if(!msg.contains("IDENTITY"))
+            {
+                return;
+            }
+            String identity = msg.substring(9, msg.indexOf("%$%"));
+            if (identity.toLowerCase().contains("connector_a")) {
                 System.out.println("Received a message from Connector A - Access granted.");
-            } else if (identity.toLowerCase().equals("b")) {
+            } else if (identity.toLowerCase().contains("connector_b")) {
                 System.out.println("Received a message from Connector B - Access denied.");
                 session.getRemote().sendString("Rejected");
                 return;
