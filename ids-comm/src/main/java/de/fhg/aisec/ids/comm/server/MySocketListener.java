@@ -23,9 +23,9 @@ public class MySocketListener implements SocketListener {
             }
             String identity = msg.substring(9, msg.indexOf("%$%"));
             if (identity.toLowerCase().contains("connector_a")) {
-                System.out.println("Received a message from Connector A - Access granted.");
+                System.out.println(TestServer.ANSI_GREEN + "Received a message from Connector A - Access granted.");
             } else if (identity.toLowerCase().contains("connector_b")) {
-                System.out.println("Received a message from Connector B - Access denied.");
+                System.out.println(TestServer.ANSI_RED + "Received a message from Connector B - Access denied." + TestServer.ANSI_RESET);
                 session.getRemote().sendString("Rejected");
                 return;
             } else {
@@ -35,7 +35,7 @@ public class MySocketListener implements SocketListener {
 
             String query = msg.substring(msg.indexOf("%$%") + 4);
             //query = "query={" + query + "}";
-            System.out.println("Received query: " + query);
+            System.out.println("Received query: " + query + TestServer.ANSI_RESET);
             //String result = server.getRepositoryFacade().query(query, tupleQueryResult -> {
             //    OutputStream resultOut = new ByteArrayOutputStream();
             //    QueryResults.report(tupleQueryResult, new SPARQLResultsXMLWriter(resultOut));

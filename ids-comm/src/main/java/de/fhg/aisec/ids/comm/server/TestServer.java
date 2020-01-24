@@ -2,16 +2,11 @@ package de.fhg.aisec.ids.comm.server;
 
 import de.fhg.aisec.ids.comm.server.persistence.RepositoryFacade;
 import de.fhg.aisec.ids.messages.AttestationProtos;
-import org.apache.jena.base.Sys;
 import org.apache.jena.fuseki.main.FusekiServer;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.util.FileUtils;
-import org.eclipse.rdf4j.query.*;
 import org.topbraid.spin.util.JenaUtil;
 
 import java.io.IOException;
@@ -27,6 +22,10 @@ import java.security.cert.CertificateException;
 
 
 public class TestServer {
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RESET = "\u001B[0m";
+
     RepositoryFacade repositoryFacade;
     IdscpServer server;
     public TestServer()
