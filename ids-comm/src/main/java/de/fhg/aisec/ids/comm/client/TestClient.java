@@ -1,9 +1,16 @@
 package de.fhg.aisec.ids.comm.client;
 
 import org.asynchttpclient.ws.WebSocket;
+import org.eclipse.rdf4j.query.algebra.In;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 public class TestClient {
 
@@ -12,12 +19,12 @@ public class TestClient {
     private int port;
     WebSocket wsClient;
     IdscpClient idscpClient;
-    MyClientWebSocketListener listener;
+    //MyClientWebSocketListener listener;
 
     private void init(char identifier)
     {
         try {
-            listener = new MyClientWebSocketListener();
+            //listener = new MyClientWebSocketListener();
 
             this.identifier = identifier;
             idscpClient =
@@ -65,9 +72,30 @@ public class TestClient {
     public static void main(String[] args) {
         try {
             TestClient testClient = new TestClient();
-            testClient.setTarget("localhost", 8081);
-            testClient.init(args[0].charAt(0)); //TODO test
-            testClient.sendQuery("SELECT some stuff");
+            String host = args[1];
+            int port = Integer.parseInt(args[2]);
+            testClient.setTarget(host, port);
+            testClient.init(args[0].charAt(0));
+            StringBuilder contentBuilder = new StringBuilder();
+            //String path = "/home/" + System.getProperty("user.name") + "/Desktop/trusted-connector-query.sparql";
+            try (Stream<String> stream = Files.lines( Paths.get("/home/" + System.getProperty("user.name") + "/Desktop/trusted-connector-query.sparql"), StandardCharsets.UTF_8))
+            {
+                stream.forEach(s -> contentBuilder.append(s).append("\n"));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            testClient.sendQuery(contentBuilder.toString());
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override public void run()
+                        {
+                            System.exit(0);
+                        }
+                    }, 3000
+            );
+//            testClient.sendQuery("SELECT * { ?s ?p ?o . }");
         }
         catch (Exception e)
         {

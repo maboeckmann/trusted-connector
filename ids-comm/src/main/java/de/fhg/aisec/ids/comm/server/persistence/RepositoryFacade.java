@@ -41,6 +41,11 @@ public class RepositoryFacade {
         repository.initialize();
     }
 
+    public RepositoryConnection getRepositoryConnection()
+    {
+        return repository.getConnection();
+    }
+
     public Collection<Resource> getContextIds() {
         Collection<Resource> ret = new HashSet<>();
         try (RepositoryConnection repCon = repository.getConnection()) {

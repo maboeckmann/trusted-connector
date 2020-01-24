@@ -20,6 +20,8 @@ dependencies {
     implementation group: 'org.eclipse.rdf4j', name: 'rdf4j-rio-jsonld', version: '2.4.3'
     implementation group: 'org.eclipse.rdf4j', name: 'rdf4j-rio-turtle', version: '2.4.3'
     implementation group: 'org.eclipse.rdf4j', name: 'rdf4j-repository-sparql', version: '2.4.3'
+    implementation group: 'org.apache.jena', name: 'jena-fuseki-main', version: '3.14.0'
+    implementation group: 'org.topbraid', name: 'shacl', version: '1.0.1'
     //implementation group: 'org.eclipse.rdf4j', name: 'rdf4j--queryresultio-text', version: '2.4.3'
 
     providedByBundle group: 'com.google.protobuf', name: 'protobuf-java', version: libraryVersions.protobuf

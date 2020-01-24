@@ -27,6 +27,14 @@ import de.fhg.aisec.ids.comm.ws.protocol.fsm.Event;
 import de.fhg.aisec.ids.comm.ws.protocol.fsm.FSM;
 import de.fhg.aisec.ids.messages.Idscp;
 import de.fhg.aisec.ids.messages.Idscp.ConnectorMessage;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import org.asynchttpclient.ws.WebSocket;
@@ -104,7 +112,22 @@ public class IdspClientSocket implements WebSocketListener {
 
   @Override
   public void onTextFrame(String message, boolean finalFragment, int rsv) {
-    System.out.println("Client websocket received text message: " + message);
+    System.out.println("received text message: " + message);
+    try {
+      Path path = Path.of(new URI("file:/home/" + System.getProperty("user.name") + "/Desktop/result.ttl"));
+      if(Files.notExists(path))
+      {
+        Files.createFile(path);
+      }
+      Files.writeString(path, message, StandardOpenOption.APPEND);
+//      PrintWriter out = new PrintWriter("/home/" + System.getProperty("user.name") + "/Desktop/result.ttl");
+//      out.write(message);
+//      out.close();
+    }
+    catch (IOException | URISyntaxException e)
+    {
+      e.printStackTrace();
+    }
     //onBinaryFrame(message.getBytes(), finalFragment, rsv);
   }
 

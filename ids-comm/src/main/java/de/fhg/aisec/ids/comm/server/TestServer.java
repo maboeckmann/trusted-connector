@@ -2,10 +2,24 @@ package de.fhg.aisec.ids.comm.server;
 
 import de.fhg.aisec.ids.comm.server.persistence.RepositoryFacade;
 import de.fhg.aisec.ids.messages.AttestationProtos;
+import org.apache.jena.base.Sys;
+import org.apache.jena.fuseki.main.FusekiServer;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.util.FileUtils;
+import org.eclipse.rdf4j.query.*;
+import org.topbraid.spin.util.JenaUtil;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -26,7 +40,7 @@ public class TestServer {
     }
     public static void main(String[] args) {
         final KeyStore ks;
-        final String sparqlEndpointUrl = "";
+        final String sparqlEndpointUrl = "http://localhost:3332/patient/sparql";
         final Path jssePath = Path.of("/etc/trusted-connector-certs/jsse");
 
         try {
@@ -47,8 +61,31 @@ public class TestServer {
                     .start();
 
             testServer.repositoryFacade = new RepositoryFacade(sparqlEndpointUrl);
-
-        } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException e) {
+            Path datasetPath = Paths.get(new URI("file:/home/mboeckmann/Dataset/med2icin-triplesPatient43.ttl"));
+            Model dataModel = JenaUtil.createMemoryModel();
+            dataModel.read(datasetPath.toString(), FileUtils.langTurtle);
+/*            StmtIterator iterator = dataModel.listStatements();
+            while(iterator.hasNext())
+            {
+                Statement current = iterator.nextStatement();
+                System.out.println(current.getSubject().toString() + " " + current.getPredicate().toString() + " " + current.getObject().toString());
+            }
+*/            Dataset ds = DatasetFactory.create(dataModel);
+            FusekiServer fusekiServer = FusekiServer.create()
+                    .add("/patient", ds)
+                    .port(3332)
+                    .build();
+            fusekiServer.start();
+/*
+            TupleQuery q = testServer.repositoryFacade.getRepositoryConnection().prepareTupleQuery(QueryLanguage.SPARQL,"SELECT ?s ?p ?o WHERE { ?s ?p ?o . }");
+            TupleQueryResult result = q.evaluate();
+            while(result.hasNext())
+            {
+                BindingSet next = result.next();
+                System.out.println(next.getValue("s").toString());
+            }
+*/
+        } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | URISyntaxException e) {
             e.printStackTrace();
         }
     }
