@@ -30,6 +30,7 @@ public class MySocketListener implements SocketListener {
                 return;
             } else {
                 System.out.println("Received a message from unknown Connector - Access denied.");
+                session.getRemote().sendString("Rejected");
                 return;
             }
 
@@ -54,7 +55,8 @@ public class MySocketListener implements SocketListener {
                 {
                     for(Binding b : tupleQueryResult.next())
                     {
-                        builder.append(b.getValue()).append(" ");
+                        builder.append(b.getName()).append(" ");
+                        builder.append(b.getValue()).append(" \n");
                     }
                     builder.deleteCharAt(builder.length()-1).append("\n");
                 }

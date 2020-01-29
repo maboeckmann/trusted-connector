@@ -45,7 +45,7 @@ public class TestServer {
         try {
             ks = KeyStore.getInstance("JKS");
             ks.load(
-                    Files.newInputStream(jssePath.resolve("server-keystore.jks")), "password".toCharArray());
+                    Files.newInputStream(jssePath.resolve("iais1-keystore.jks")), "password".toCharArray());
             TestServer testServer = new TestServer();
             SocketListener listener = new MySocketListener(testServer);
 
