@@ -21,12 +21,14 @@ package de.fhg.aisec.ids.comm.client;
 
 import static org.asynchttpclient.Dsl.asyncHttpClient;
 
+import com.ning.http.client.AsyncHttpClientConfig;
 import de.fhg.aisec.ids.api.conm.RatResult;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
 import java.net.URI;
 import java.security.KeyManagementException;
+import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -34,8 +36,12 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.xml.bind.DatatypeConverter;
+
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig.Builder;
 import org.asynchttpclient.ws.WebSocket;
@@ -88,7 +94,7 @@ public class IdscpClient {
               @Override
               public void checkServerTrusted(X509Certificate[] certs, String str)
                   throws CertificateException {
-                try {
+                /*try {
                   MessageDigest digest = MessageDigest.getInstance("SHA-256");
                   byte[] digestBytes = digest.digest(certs[0].getEncoded());
                   if (config
@@ -101,7 +107,7 @@ public class IdscpClient {
                   }
                 } catch (Exception x) {
                   throw new CertificateException("Error during hash calculation", x);
-                }
+                }*/
               }
 
               @Override
@@ -117,9 +123,18 @@ public class IdscpClient {
             }
           },
           null);
-      SslContext sslContext = new JdkSslContext(ctx, true, ClientAuth.NONE);
-      builder.setSslContext(sslContext);
+      SSLContextBuilder myBuilder = new SSLContextBuilder();
+      try {
+        myBuilder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+        SslContext sslContext = new JdkSslContext(myBuilder.build(), true, ClientAuth.NONE);
+        builder.setSslContext(sslContext);
+      }
+      catch (KeyStoreException e)
+      {
+        e.printStackTrace();
+      }
     }
+
     final AsyncHttpClient c = asyncHttpClient(builder.build());
 
     // Connect to web socket
@@ -176,4 +191,27 @@ public class IdscpClient {
   public String getMetaData() {
     return this.metaData;
   }
+
+
+  private SSLContext createSslContext() throws Exception {
+    X509TrustManager tm = new X509TrustManager() {
+
+      public void checkClientTrusted(X509Certificate[] xcs,
+                                     String string) throws CertificateException {
+      }
+
+      public void checkServerTrusted(X509Certificate[] xcs,
+                                     String string) throws CertificateException {
+      }
+
+      public X509Certificate[] getAcceptedIssuers() {
+        return null;
+      }
+    };
+
+    SSLContext ctx = SSLContext.getInstance("TLS");
+    ctx.init(null, new TrustManager[] { tm }, null);
+    return ctx;
+  }
+
 }
