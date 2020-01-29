@@ -30,7 +30,6 @@ import de.fhg.aisec.ids.messages.Idscp;
 import de.fhg.aisec.ids.messages.Idscp.ConnectorMessage;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -124,11 +123,11 @@ public class IdspClientSocket implements WebSocketListener {
     }
     if(message.length() < 2)
     {
-      TestClient.response = "Received empty response.\n" + TestServer.ANSI_RESET;
+      TestClient.response = TestServer.ANSI_RESET;
       System.out.println("Received empty response.\n" + TestServer.ANSI_RESET);
     }
     else {
-      TestClient.response = color + "Received text message: \n" + message + TestServer.ANSI_RESET;
+      TestClient.response = color + message + TestServer.ANSI_RESET;
       System.out.println(color + "Received text message: \n" + message + TestServer.ANSI_RESET);
     }
 
