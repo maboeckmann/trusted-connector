@@ -4,7 +4,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.rdf4j.query.*;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MySocketListener implements SocketListener {
     private static TestServer server;
