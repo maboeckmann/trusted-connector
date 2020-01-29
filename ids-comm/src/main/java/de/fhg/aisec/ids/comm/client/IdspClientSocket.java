@@ -21,6 +21,7 @@ package de.fhg.aisec.ids.comm.client;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.fhg.aisec.ids.api.conm.RatResult;
+import de.fhg.aisec.ids.comm.server.TestServer;
 import de.fhg.aisec.ids.comm.ws.protocol.ClientProtocolMachine;
 import de.fhg.aisec.ids.comm.ws.protocol.ProtocolState;
 import de.fhg.aisec.ids.comm.ws.protocol.fsm.Event;
@@ -112,7 +113,25 @@ public class IdspClientSocket implements WebSocketListener {
 
   @Override
   public void onTextFrame(String message, boolean finalFragment, int rsv) {
-    System.out.println("received text message: " + message);
+    String color;
+    if(message.length() > 20)
+    {
+      color = TestServer.ANSI_GREEN;
+    }
+    else
+    {
+      color = TestServer.ANSI_RED;
+    }
+    if(message.length() < 2)
+    {
+      TestClient.response = "Received empty response.\n" + TestServer.ANSI_RESET;
+      System.out.println("Received empty response.\n" + TestServer.ANSI_RESET);
+    }
+    else {
+      TestClient.response = color + "Received text message: \n" + message + TestServer.ANSI_RESET;
+      System.out.println(color + "Received text message: \n" + message + TestServer.ANSI_RESET);
+    }
+
     try {
       Path path = Path.of(new URI("file:/home/" + System.getProperty("user.name") + "/Desktop/result.ttl"));
       if(Files.notExists(path))

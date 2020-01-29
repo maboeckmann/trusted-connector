@@ -1,5 +1,6 @@
 package de.fhg.aisec.ids.comm.client;
 
+import de.fhg.aisec.ids.comm.server.TestServer;
 import org.asynchttpclient.ws.WebSocket;
 import org.asynchttpclient.ws.WebSocketListener;
 import org.eclipse.jetty.websocket.api.Session;
@@ -29,6 +30,16 @@ public class MyClientWebSocketListener implements WebSocketListener {
 
     @Override
     public void onTextFrame(String payload, boolean finalFragment, int rsv) {
-        System.out.println("Received text message response: " + payload);
+        String color;
+        if(payload.length() > 20)
+        {
+            color = TestServer.ANSI_GREEN;
+        }
+        else
+        {
+            color = TestServer.ANSI_RED;
+        }
+
+        System.out.println(color + "Received text message response: \n" + payload + TestServer.ANSI_RESET);
     }
 }

@@ -46,6 +46,8 @@ dependencies {
     implementation group: 'org.eclipse.rdf4j', name: 'rdf4j-repository-sparql', version: '2.4.3'
     implementation group: 'org.apache.jena', name: 'jena-fuseki-main', version: '3.14.0'
     implementation group: 'org.topbraid', name: 'shacl', version: '1.0.1'
+    implementation group: 'com.ning', name: 'async-http-client', version: '1.9.40'
+    implementation group: 'org.asynchttpclient', name: 'async-http-client-netty-utils', version: '2.10.4'
 
     providedByBundle group: 'com.google.protobuf', name: 'protobuf-java', version: libraryVersions.protobuf
     
