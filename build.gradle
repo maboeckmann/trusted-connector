@@ -147,6 +147,7 @@ allprojects {
     }
 
     repositories {
+	mavenLocal()
         mavenCentral()
         jcenter()
         // References IAIS repository that contains the infomodel artifacts

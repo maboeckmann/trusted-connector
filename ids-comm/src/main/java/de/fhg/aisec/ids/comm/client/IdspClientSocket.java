@@ -127,7 +127,11 @@ public class IdspClientSocket implements WebSocketListener {
       System.out.println("Received empty response.\n" + TestServer.ANSI_RESET);
     }
     else {
-      TestClient.response = color + message + TestServer.ANSI_RESET;
+      //String[] splitMessage = message.split("\t");
+      //for(int i = 0; i < splitMessage.length; i++) {
+      //  System.out.println(splitMessage[2*i] + String.format("%1$32s", splitMessage[2*i + 1]));
+      //}
+      TestClient.response = message;
       System.out.println(color + "Received text message: \n" + message + TestServer.ANSI_RESET);
     }
 
