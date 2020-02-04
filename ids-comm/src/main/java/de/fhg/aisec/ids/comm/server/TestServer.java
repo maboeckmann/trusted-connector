@@ -12,6 +12,7 @@ import org.topbraid.spin.util.JenaUtil;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,6 +41,7 @@ public class TestServer {
     public static void main(String[] args) {
         final KeyStore ks;
         final String sparqlEndpointUrl = "http://localhost:3332/patient/sparql";
+
         final Path jssePath = Path.of("/etc/trusted-connector-certs/jsse");
 
         try {
