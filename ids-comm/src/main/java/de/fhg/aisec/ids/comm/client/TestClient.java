@@ -127,15 +127,21 @@ public class TestClient {
                         Thread.sleep(100);
                     }
 //                    testClient.sendQuery(contentBuilder.toString());
-                    out.println("HTTP/1.0 200 OK");
-                    out.println("Content-Type: text/html");
-                    out.println("");
-                    if (response == null)
-                    {
-                        out.println("No response received from server.");
+                    if(response.equals("Rejected")) {
+                        out.println("HTTP/1.0 403 FORBIDDEN");
                     }
-                    else {
-                        out.print(response);
+                    else
+                    {
+                        out.println("HTTP/1.0 200 OK");
+                        out.println("Content-Type: text/html");
+                        out.println("");
+                        if (response == null)
+                        {
+                            out.println("No response received from server.");
+                        }
+                        else {
+                            out.print(response);
+                        }
                     }
 /*                    String method = "get";
                     out.print("<html><form method="+method+">");
