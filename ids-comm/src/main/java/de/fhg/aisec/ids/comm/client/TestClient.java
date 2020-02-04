@@ -117,7 +117,14 @@ public class TestClient {
                     gets = gets.substring(0, gets.indexOf(" HTTP"));
                     String originalQuery = contentBuilder.toString();
                     response = null;
-                    testClient.sendQuery(originalQuery.replace("$id$", "LP FFM" + gets));
+                    //if ID is 0, then don't filter
+                    if(gets.equals("0"))
+                    {
+                        testClient.sendQuery(originalQuery.replace("FILTER(?id = \"$id$\") .", ""));
+                    }
+                    else {
+                        testClient.sendQuery(originalQuery.replace("$id$", "LP FFM" + gets));
+                    }
                     for(int i = 0; i < 100; i++) //wait up to 10 seconds
                     {
                         if(response != null)

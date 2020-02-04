@@ -24,9 +24,16 @@ public class MySocketListener implements SocketListener {
             if (identity.toLowerCase().contains("connector_a")) {
                 System.out.println(TestServer.ANSI_GREEN + "Received a message - Access granted.");
             } else if (identity.toLowerCase().contains("connector_b")) {
-                System.out.println(TestServer.ANSI_RED + "Received a message - Access denied." + TestServer.ANSI_RESET);
-                session.getRemote().sendString("Rejected");
-                return;
+                if(msg.contains("FILTER")) {
+                    System.out.println("Message: " + msg);
+                    System.out.println(TestServer.ANSI_RED + "Received a message - Access denied." + TestServer.ANSI_RESET);
+                    session.getRemote().sendString("Rejected");
+                    return;
+                }
+                else
+                {
+                    System.out.println(TestServer.ANSI_GREEN + "Received a message - Access granted.");
+                }
             } else {
                 System.out.println(TestServer.ANSI_RED + "Received a message - Access denied." + TestServer.ANSI_RESET);
                 session.getRemote().sendString("Rejected");

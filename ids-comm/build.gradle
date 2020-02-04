@@ -63,5 +63,6 @@ dependencies {
 }
 
 repositories {
+ mavenLocal()
  mavenCentral()
 }
